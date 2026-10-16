@@ -1,0 +1,238 @@
+{
+  "$schema": "https://vega.github.io/schema/vega/v5.json",
+  "description": "Chart 7 - Treemap (Vega): 2025 records nested by kingdom, then class. Rectangle area = records. Colour = the group colours used throughout the page.",
+  "width": 1000,
+  "height": 440,
+  "padding": 0,
+  "autosize": "none",
+  "data": [
+    {
+      "name": "tree",
+      "url": "data/taxonomy.csv",
+      "format": {
+        "type": "csv",
+        "parse": {
+          "records": "number"
+        }
+      },
+      "transform": [
+        {
+          "type": "stratify",
+          "key": "id",
+          "parentKey": "parent"
+        },
+        {
+          "type": "treemap",
+          "field": "records",
+          "sort": {
+            "field": "value",
+            "order": "descending"
+          },
+          "round": true,
+          "method": "squarify",
+          "ratio": 1.4,
+          "paddingInner": 2,
+          "paddingOuter": 0,
+          "paddingTop": 22,
+          "size": [
+            {
+              "signal": "width"
+            },
+            {
+              "signal": "height"
+            }
+          ]
+        },
+        {
+          "type": "formula",
+          "as": "grp",
+          "expr": "datum.scientific == 'Aves' ? 'Birds' : datum.scientific == 'Amphibia' ? 'Frogs' : datum.scientific == 'Insecta' ? 'Insects' : datum.scientific == 'Reptilia' ? 'Reptiles' : datum.scientific == 'Mammalia' ? 'Mammals' : datum.kingdom == 'Fungi' ? 'Fungi' : datum.kingdom == 'Plantae' ? 'Plants' : datum.kingdom == 'Animalia' ? 'Other animals' : 'Other'"
+        }
+      ]
+    },
+    {
+      "name": "kingdoms",
+      "source": "tree",
+      "transform": [
+        {
+          "type": "filter",
+          "expr": "datum.depth === 1"
+        }
+      ]
+    },
+    {
+      "name": "leaves",
+      "source": "tree",
+      "transform": [
+        {
+          "type": "filter",
+          "expr": "datum.depth === 2"
+        },
+        {
+          "type": "joinaggregate",
+          "fields": [
+            "records"
+          ],
+          "ops": [
+            "sum"
+          ],
+          "as": [
+            "all"
+          ]
+        }
+      ]
+    }
+  ],
+  "scales": [
+    {
+      "name": "color",
+      "type": "ordinal",
+      "domain": [
+        "Birds",
+        "Frogs",
+        "Insects",
+        "Reptiles",
+        "Fungi",
+        "Mammals",
+        "Plants",
+        "Other animals",
+        "Other"
+      ],
+      "range": [
+        "#0072B2",
+        "#009E73",
+        "#E69F00",
+        "#8A6A36",
+        "#CC79A7",
+        "#7B68A6",
+        "#97A33C",
+        "#9FB3C2",
+        "#C3C9C4"
+      ]
+    }
+  ],
+  "marks": [
+    {
+      "type": "rect",
+      "from": {
+        "data": "leaves"
+      },
+      "encode": {
+        "update": {
+          "x": {
+            "field": "x0"
+          },
+          "y": {
+            "field": "y0"
+          },
+          "x2": {
+            "field": "x1"
+          },
+          "y2": {
+            "field": "y1"
+          },
+          "fill": {
+            "scale": "color",
+            "field": "grp"
+          },
+          "stroke": {
+            "value": "#FFFFFF"
+          },
+          "strokeWidth": {
+            "value": 1
+          },
+          "tooltip": {
+            "signal": "{'Group': datum.name, 'Scientific name': datum.scientific || '-', 'Records in 2025': format(datum.records, ','), 'Share of all records': format(datum.records / datum.all, '.1%')}"
+          }
+        }
+      }
+    },
+    {
+      "type": "text",
+      "from": {
+        "data": "kingdoms"
+      },
+      "encode": {
+        "update": {
+          "x": {
+            "field": "x0",
+            "offset": 1
+          },
+          "y": {
+            "field": "y0",
+            "offset": 15
+          },
+          "text": {
+            "signal": "(datum.x1 - datum.x0) > 60 ? datum.name : ''"
+          },
+          "fontWeight": {
+            "value": "bold"
+          },
+          "fontSize": {
+            "value": 13
+          },
+          "fill": {
+            "value": "#17261F"
+          }
+        }
+      }
+    },
+    {
+      "type": "text",
+      "from": {
+        "data": "leaves"
+      },
+      "encode": {
+        "update": {
+          "x": {
+            "field": "x0",
+            "offset": 6
+          },
+          "y": {
+            "field": "y0",
+            "offset": 18
+          },
+          "text": {
+            "signal": "(datum.x1 - datum.x0) > 90 && (datum.y1 - datum.y0) > 26 ? datum.name : ''"
+          },
+          "fill": {
+            "value": "#FFFFFF"
+          },
+          "fontSize": {
+            "value": 12.5
+          },
+          "fontWeight": {
+            "value": "bold"
+          }
+        }
+      }
+    },
+    {
+      "type": "text",
+      "from": {
+        "data": "leaves"
+      },
+      "encode": {
+        "update": {
+          "x": {
+            "field": "x0",
+            "offset": 6
+          },
+          "y": {
+            "field": "y0",
+            "offset": 34
+          },
+          "text": {
+            "signal": "(datum.x1 - datum.x0) > 90 && (datum.y1 - datum.y0) > 44 ? format(datum.records / datum.all, '.0%') + ' of records' : ''"
+          },
+          "fill": {
+            "value": "#FFFFFF"
+          },
+          "fontSize": {
+            "value": 11.5
+          }
+        }
+      }
+    }
+  ]
+}

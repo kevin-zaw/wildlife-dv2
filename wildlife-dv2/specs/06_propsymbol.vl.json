@@ -1,0 +1,222 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "description": "Chart 6 - Proportional symbol map: circle AREA = 2025 records within 50 km of each capital city; colour = number of species recorded there.",
+  "width": "container",
+  "height": 400,
+  "projection": {
+    "type": "conicEqualArea",
+    "parallels": [
+      -18,
+      -36
+    ],
+    "rotate": [
+      -132,
+      0
+    ]
+  },
+  "layer": [
+    {
+      "data": {
+        "url": "data/aus_states.topojson",
+        "format": {
+          "type": "topojson",
+          "feature": "states"
+        }
+      },
+      "mark": {
+        "type": "geoshape",
+        "fill": "#E9EEE7",
+        "stroke": "#FFFFFF",
+        "strokeWidth": 1
+      }
+    },
+    {
+      "data": {
+        "url": "data/capitals.csv",
+        "format": {
+          "type": "csv",
+          "parse": {
+            "lat": "number",
+            "lon": "number",
+            "records": "number",
+            "species": "number"
+          }
+        }
+      },
+      "layer": [
+        {
+          "mark": {
+            "type": "circle",
+            "stroke": "#FFFFFF",
+            "strokeWidth": 1.2,
+            "opacity": 0.92
+          },
+          "encoding": {
+            "longitude": {
+              "field": "lon",
+              "type": "quantitative"
+            },
+            "latitude": {
+              "field": "lat",
+              "type": "quantitative"
+            },
+            "size": {
+              "field": "records",
+              "type": "quantitative",
+              "scale": {
+                "type": "sqrt",
+                "range": [
+                  30,
+                  3200
+                ],
+                "zero": true
+              },
+              "legend": {
+                "title": "Records within 50 km",
+                "format": ".2~s",
+                "orient": "right",
+                "symbolFillColor": "#B3D4A6",
+                "symbolStrokeColor": "#378757",
+                "values": [
+                  90000,
+                  400000,
+                  900000
+                ]
+              }
+            },
+            "color": {
+              "field": "species",
+              "type": "quantitative",
+              "scale": {
+                "range": [
+                  "#B3D4A6",
+                  "#17563A"
+                ]
+              },
+              "legend": {
+                "title": "Species recorded",
+                "format": ",d",
+                "orient": "right",
+                "gradientLength": 120
+              }
+            },
+            "order": {
+              "field": "records",
+              "sort": "descending"
+            },
+            "tooltip": [
+              {
+                "field": "city",
+                "title": "City"
+              },
+              {
+                "field": "records",
+                "title": "Records within 50 km",
+                "format": ","
+              },
+              {
+                "field": "species",
+                "title": "Species recorded",
+                "format": ","
+              }
+            ]
+          }
+        },
+        {
+          "transform": [
+            {
+              "filter": "datum.city != 'Canberra'"
+            }
+          ],
+          "encoding": {
+            "longitude": {
+              "field": "lon",
+              "type": "quantitative"
+            },
+            "latitude": {
+              "field": "lat",
+              "type": "quantitative"
+            },
+            "text": {
+              "field": "city"
+            }
+          },
+          "layer": [
+            {
+              "mark": {
+                "type": "text",
+                "align": "left",
+                "dx": 12,
+                "dy": -8,
+                "fontSize": 11.5,
+                "fontWeight": "bold",
+                "color": "#FFFFFF",
+                "stroke": "#FFFFFF",
+                "strokeWidth": 3.5,
+                "strokeJoin": "round"
+              }
+            },
+            {
+              "mark": {
+                "type": "text",
+                "align": "left",
+                "dx": 12,
+                "dy": -8,
+                "fontSize": 11.5,
+                "fontWeight": "bold",
+                "color": "#17261F"
+              }
+            }
+          ]
+        },
+        {
+          "transform": [
+            {
+              "filter": "datum.city == 'Canberra'"
+            }
+          ],
+          "encoding": {
+            "longitude": {
+              "field": "lon",
+              "type": "quantitative"
+            },
+            "latitude": {
+              "field": "lat",
+              "type": "quantitative"
+            },
+            "text": {
+              "field": "city"
+            }
+          },
+          "layer": [
+            {
+              "mark": {
+                "type": "text",
+                "align": "right",
+                "dx": -12,
+                "dy": 10,
+                "fontSize": 11.5,
+                "fontWeight": "bold",
+                "color": "#FFFFFF",
+                "stroke": "#FFFFFF",
+                "strokeWidth": 3.5,
+                "strokeJoin": "round"
+              }
+            },
+            {
+              "mark": {
+                "type": "text",
+                "align": "right",
+                "dx": -12,
+                "dy": 10,
+                "fontSize": 11.5,
+                "fontWeight": "bold",
+                "color": "#17261F"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

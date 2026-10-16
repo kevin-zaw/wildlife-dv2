@@ -1,0 +1,79 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "description": "Chart 2 - Waffle chart: 100 squares, each 1% of records added for 2025, coloured by who contributed them.",
+  "data": {
+    "url": "data/waffle.csv",
+    "format": {
+      "type": "csv",
+      "parse": {
+        "id": "number",
+        "pct": "number"
+      }
+    }
+  },
+  "transform": [
+    {
+      "calculate": "datum.id % 10",
+      "as": "col"
+    },
+    {
+      "calculate": "floor(datum.id / 10)",
+      "as": "row"
+    },
+    {
+      "calculate": "datum.type == 'Community' ? 'Members of the public (community platforms)' : 'Museums, herbaria, government & research surveys'",
+      "as": "who"
+    }
+  ],
+  "width": 280,
+  "height": 280,
+  "mark": {
+    "type": "square",
+    "size": 420,
+    "opacity": 1
+  },
+  "encoding": {
+    "x": {
+      "field": "col",
+      "type": "ordinal",
+      "axis": null
+    },
+    "y": {
+      "field": "row",
+      "type": "ordinal",
+      "axis": null
+    },
+    "color": {
+      "field": "who",
+      "type": "nominal",
+      "scale": {
+        "domain": [
+          "Members of the public (community platforms)",
+          "Museums, herbaria, government & research surveys"
+        ],
+        "range": [
+          "#1C5A3D",
+          "#C9D2CA"
+        ]
+      },
+      "legend": {
+        "orient": "bottom",
+        "direction": "vertical",
+        "title": null,
+        "labelLimit": 320,
+        "symbolSize": 160
+      }
+    },
+    "tooltip": [
+      {
+        "field": "who",
+        "title": "Contributor"
+      },
+      {
+        "field": "pct",
+        "title": "% of 2025 records",
+        "format": ".1f"
+      }
+    ]
+  }
+}
