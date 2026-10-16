@@ -1,0 +1,157 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "description": "Chart 12 - Dumbbell chart: number of different species recorded in each state or territory, 2015 vs 2025.",
+  "width": "container",
+  "height": 300,
+  "data": {
+    "url": "data/species_state.csv",
+    "format": {
+      "type": "csv",
+      "parse": {
+        "y2015": "number",
+        "y2025": "number"
+      }
+    }
+  },
+  "transform": [
+    {
+      "calculate": "datum.y2025 - datum.y2015",
+      "as": "gain"
+    }
+  ],
+  "encoding": {
+    "y": {
+      "field": "state",
+      "type": "nominal",
+      "sort": {
+        "field": "y2025",
+        "order": "descending"
+      },
+      "axis": {
+        "title": null,
+        "domain": false,
+        "ticks": false,
+        "labelLimit": 220
+      }
+    }
+  },
+  "layer": [
+    {
+      "mark": {
+        "type": "rule",
+        "color": "#B9C4BC",
+        "strokeWidth": 4
+      },
+      "encoding": {
+        "x": {
+          "field": "y2015",
+          "type": "quantitative",
+          "title": "Species recorded in the year",
+          "axis": {
+            "format": ","
+          }
+        },
+        "x2": {
+          "field": "y2025"
+        },
+        "tooltip": [
+          {
+            "field": "state",
+            "title": "State"
+          },
+          {
+            "field": "y2015",
+            "title": "Species in 2015",
+            "format": ","
+          },
+          {
+            "field": "y2025",
+            "title": "Species in 2025",
+            "format": ","
+          },
+          {
+            "field": "gain",
+            "title": "Increase",
+            "format": "+,"
+          }
+        ]
+      }
+    },
+    {
+      "transform": [
+        {
+          "fold": [
+            "y2015",
+            "y2025"
+          ],
+          "as": [
+            "yr",
+            "species"
+          ]
+        },
+        {
+          "calculate": "datum.yr == 'y2015' ? '2015' : '2025'",
+          "as": "Year"
+        }
+      ],
+      "mark": {
+        "type": "circle",
+        "size": 150,
+        "opacity": 1
+      },
+      "encoding": {
+        "x": {
+          "field": "species",
+          "type": "quantitative"
+        },
+        "color": {
+          "field": "Year",
+          "type": "nominal",
+          "scale": {
+            "range": [
+              "#9CC79A",
+              "#17563A"
+            ]
+          },
+          "legend": {
+            "orient": "top",
+            "title": null
+          }
+        },
+        "tooltip": [
+          {
+            "field": "state",
+            "title": "State"
+          },
+          {
+            "field": "Year"
+          },
+          {
+            "field": "species",
+            "title": "Species recorded",
+            "format": ","
+          }
+        ]
+      }
+    },
+    {
+      "mark": {
+        "type": "text",
+        "align": "left",
+        "dx": 10,
+        "fontSize": 11,
+        "color": "#44514A"
+      },
+      "encoding": {
+        "x": {
+          "field": "y2025",
+          "type": "quantitative"
+        },
+        "text": {
+          "field": "gain",
+          "format": "+,"
+        }
+      }
+    }
+  ]
+}
